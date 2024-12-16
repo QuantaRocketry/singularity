@@ -4,7 +4,7 @@ import { invoke } from "@tauri-apps/api/tauri";
 
 function SerialSelector(){
   const [portSelect, setPortSelect] = useState("");
-  const [ports, setPorts] = useState(["/dev/usb1", "/dev/usb2"])
+  const [ports, setPorts] = useState(["/dev/ttyUSB0", "/dev/ttyACM0"])
 
   async function sendPort(p: string) {
     setPortSelect(p);
@@ -40,7 +40,7 @@ function SerialSelector(){
 
 
 function SerialStream() {
-  const [content, setContent] = useState("A\nA\nA\nA\nA\nA\nA");
+  const [content, setContent] = useState("");
   const [inputMessage, setInputMessage] = useState("");
   
   async function sendSerialMessage(s: string) {
