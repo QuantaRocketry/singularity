@@ -1,7 +1,21 @@
-# Tauri + React + Typescript
+# Singularity 
 
-This template should help get you started developing with Tauri, React and Typescript in Vite.
+[![My Skills](https://skillicons.dev/icons?i=tauri,rust,ts,tailwind)](https://skillicons.dev)
 
-## Recommended IDE Setup
+A device manager designed for interacting with Quanta Rocketry's systems (and any other serial devices).
 
-- [VS Code](https://code.visualstudio.com/) + [Tauri](https://marketplace.visualstudio.com/items?itemName=tauri-apps.tauri-vscode) + [rust-analyzer](https://marketplace.visualstudio.com/items?itemName=rust-lang.rust-analyzer)
+## Usage
+
+This project uses a mix of nix-shell and justfile.
+
+```sh
+nix-shell 
+```
+
+```sh
+just dev
+```
+
+## Screenshots
+
+![Cover Image](./public/cover.png)
