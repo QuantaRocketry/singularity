@@ -19,9 +19,9 @@ in pkgs.mkShell {
     gtk3
     harfbuzz
     librsvg
-    libsoup
+    libsoup_2_4
     pango
-    webkitgtk
+    webkitgtk_4_0
     openssl
   ];
 }
