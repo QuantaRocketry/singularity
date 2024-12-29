@@ -13,6 +13,7 @@ nix-shell
 ```
 
 ```sh
+just install
 just dev
 ```
 

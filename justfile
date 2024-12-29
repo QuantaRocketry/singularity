@@ -1,19 +1,14 @@
 # justfile for Tauri app development
 
-# Set the default target
-default_target := "dev"
-
 # Install dependencies
 install:
-    # Install Rust dependencies
-    cargo install --locked
     # Install Node.js dependencies (if using a frontend with Node)
-    npm install
+    pnpm install
 
 # Build the Tauri app
 build:
     # Build the frontend assets (usually with a bundler like webpack, vite, etc.)
-    npm run tauri build
+    pnpm tauri build
 
 # Run the Tauri app in development mode (with live reloading)
 dev:
