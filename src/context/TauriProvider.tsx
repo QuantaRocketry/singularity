@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useContext, ReactNode } from "react";
 import * as tauriPath from "@tauri-apps/api/path";
-import * as fs from "@tauri-apps/api/fs";
-import * as os from "@tauri-apps/api/os";
+import * as fs from "@tauri-apps/plugin-fs";
+import * as os from "@tauri-apps/plugin-os";
 import tauriConfJson from "../../src-tauri/tauri.conf.json";
 
 declare global {
@@ -10,7 +10,8 @@ declare global {
   }
 }
 
-export const APP_NAME = tauriConfJson.package.productName;
+export const APP_NAME = "Singularity";
+// export const APP_NAME = tauriConfJson.package.productName;
 export const RUNNING_IN_TAURI = window.__TAURI__ !== undefined;
 
 // NOTE: Add cacheable Tauri calls in this file
@@ -46,11 +47,11 @@ export function TauriProvider({ children }: { children: ReactNode }) {
         setDocumentDir(_documents);
         const _osType = await os.type();
         setOsType(_osType);
-        const _fileSep = _osType === "Windows_NT" ? "\\" : "/";
+        const _fileSep = await os.family() === "windows" ? "\\" : "/";
         setFileSep(_fileSep);
-        await fs.createDir(APP_NAME, {
-          dir: fs.BaseDirectory.Document,
-          recursive: true,
+        await fs.create(APP_NAME, {
+          baseDir: fs.BaseDirectory.Document,
+          // recursive: true,
         });
         setAppDocuments(`${_documents}${APP_NAME}`);
         console.log("appDocuments", `${_documents}${APP_NAME}`);

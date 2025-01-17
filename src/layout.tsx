@@ -1,5 +1,5 @@
 import { Outlet, Link, useLocation } from "react-router-dom";
-import { AiOutlineSetting, AiOutlineHome, AiOutlineExperiment, AiOutlineUsb } from "react-icons/ai";
+import { AiOutlineSetting, AiOutlineHome, AiOutlineExperiment, AiOutlineUsb, AiOutlineBoxPlot, AiOutlineFunnelPlot, AiOutlineFund, AiOutlineEnvironment } from "react-icons/ai";
 import clsx from "clsx";
 
 export default function Layout() {
@@ -23,6 +23,20 @@ export default function Layout() {
           <AiOutlineExperiment
             className={clsx(defaultClass, {
               [selectedClass]: location.pathname === "/device",
+            })}
+          />
+        </Link>
+        <Link className={linkClass} to="/plot">
+          <AiOutlineFund
+            className={clsx(defaultClass, {
+              [selectedClass]: location.pathname === "/plot",
+            })}
+          />
+        </Link>
+        <Link className={linkClass} to="/map">
+          <AiOutlineEnvironment
+            className={clsx(defaultClass, {
+              [selectedClass]: location.pathname === "/map",
             })}
           />
         </Link>

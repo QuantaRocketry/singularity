@@ -17,7 +17,21 @@
           just
           pnpm
         ];
-        buildInputs = with pkgs; [ webkitgtk_4_0 ];
+        buildInputs = with pkgs; [
+          at-spi2-atk
+          atkmm
+          cairo
+          gdk-pixbuf
+          glib
+          gtk3
+          harfbuzz
+          librsvg
+          libsoup_3
+          pango
+          webkitgtk_4_1
+          openssl
+          udev
+        ];
       in with pkgs; {
         devShells.default = mkShell { inherit buildInputs nativeBuildInputs; };
       });
