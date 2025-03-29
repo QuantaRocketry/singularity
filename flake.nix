@@ -13,6 +13,7 @@
           gobject-introspection
           cargo
           cargo-tauri
+          rust-analyzer
           nodejs
           just
           pnpm

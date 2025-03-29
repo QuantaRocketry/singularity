@@ -4,14 +4,14 @@ use std::{sync::Mutex, thread};
 
 use crate::{settings, AppData};
 
-use serialport;
+use serialport::{self, SerialPort};
 use tauri::{Emitter, Manager};
 
 #[derive(Default)]
 pub struct SerialData {
-    settings: settings::SerialSettings,
-    content: Vec<String>,
-    connected_port: Option<Box<dyn serialport::SerialPort>>,
+    pub settings: settings::SerialSettings,
+    pub content: Vec<String>,
+    pub connected_port: Option<Box<dyn serialport::SerialPort>>,
 }
 
 #[tauri::command]
@@ -30,6 +30,15 @@ pub async fn get_ports() -> Result<Vec<String>, String> {
     Ok(port_names)
 }
 
+fn open_port(
+    port: &str,
+    settings: &settings::SerialSettings,
+) -> serialport::Result<Box<dyn SerialPort>> {
+    serialport::new(port, settings.baud_rate)
+        .timeout(Duration::from_millis(10))
+        .open()
+}
+
 #[tauri::command]
 pub async fn set_port(
     port: &str,
@@ -37,10 +46,7 @@ pub async fn set_port(
 ) -> Result<String, String> {
     let mut state = state.lock().unwrap();
     state.serial.connected_port = None;
-    match serialport::new(port, 9600)
-        .timeout(Duration::from_secs(10))
-        .open()
-    {
+    match open_port(port, &state.serial.settings) {
         Ok(p) => {
             let name = p.name().unwrap_or("Unknown".to_string());
             state.serial.connected_port = Some(p);
@@ -68,10 +74,7 @@ pub async fn set_baud_rate(
     };
 
     state.serial.connected_port = None;
-    match serialport::new(&port, 9600)
-        .timeout(Duration::from_secs(10))
-        .open()
-    {
+    match open_port(&port, &state.serial.settings) {
         Ok(p) => {
             let name = p.name().unwrap_or("Unknown".to_string());
             state.serial.connected_port = Some(p);
@@ -96,15 +99,14 @@ pub async fn send_serial_message(
     message: String,
     state: tauri::State<'_, Mutex<AppData>>,
 ) -> Result<String, String> {
-    let mut state = state.lock().unwrap();
-    state.serial.content.push(message.clone());
+    let state = state.lock().unwrap();
 
     if let Some(p) = &state.serial.connected_port {
         let mut port = p.try_clone().expect("Failed to obtain clone");
+        let message = message + "\n";
         match port.write(message.as_bytes()) {
             Ok(_) => {
-                eprintln!("{}", &message);
-                std::io::stdout().flush().unwrap();
+                port.flush().unwrap();
             }
             Err(ref e) => {
                 eprintln!("{:?}", e);
@@ -139,7 +141,7 @@ pub async fn clear_serial_content(state: tauri::State<'_, Mutex<AppData>>) -> Re
 pub async fn serial_monitor(handle: &tauri::AppHandle) -> Result<(), String> {
     let mut serial_buf: Vec<u8> = vec![0; 1000];
     loop {
-        thread::sleep(Duration::from_millis(10));
+        thread::sleep(Duration::from_millis(100));
         let state_handle = handle.clone();
         let state = state_handle.state::<Mutex<AppData>>();
         let mut state = state.lock().unwrap();
@@ -148,14 +150,18 @@ pub async fn serial_monitor(handle: &tauri::AppHandle) -> Result<(), String> {
             let mut port = p.try_clone().expect("Failed to obtain clone");
             match port.read(serial_buf.as_mut_slice()) {
                 Ok(t) => {
-                    let _result = state_handle.emit(
-                        "serial_message_received",
-                        String::from_utf8_lossy(&serial_buf[..t]).to_string(),
-                    );
-                    state
-                        .serial
-                        .content
-                        .push(String::from_utf8_lossy(&serial_buf[..t]).to_string());
+                    let message = &serial_buf[..t];
+                    let lines = message.split(|&b| b == b'\n');
+                    lines.for_each(|line| {
+                        let _result = state_handle.emit(
+                            "serial_message_received",
+                            String::from_utf8_lossy(line).to_string(),
+                        );
+                        state
+                            .serial
+                            .content
+                            .push(String::from_utf8_lossy(line).to_string());
+                    });
                 }
                 Err(ref e) => match e.kind() {
                     io::ErrorKind::BrokenPipe => {
@@ -163,6 +169,7 @@ pub async fn serial_monitor(handle: &tauri::AppHandle) -> Result<(), String> {
                         let _ = state_handle.emit("serial_disconnected", ());
                         eprintln!("Port disconnected")
                     }
+                    io::ErrorKind::TimedOut => {} // expected timeout
                     _ => eprintln!("{:?}", e),
                 },
             }

@@ -1,16 +1,10 @@
 // Prevents additional console window on Windows in release, DO NOT REMOVE!!
 #![cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
 
-mod board;
 mod serial;
 mod settings;
-use board::BoardVariant;
 
-use std::{
-    io::{self, Write},
-    sync::{Arc, Mutex},
-    thread,
-};
+use std::sync::Mutex;
 use tauri::Manager;
 
 // Learn more about Tauri commands at https://tauri.app/v1/guides/features/command
@@ -21,8 +15,7 @@ async fn greet(name: &str) -> Result<String, String> {
 
 #[derive(Default)]
 struct AppData {
-    board_variant: Option<BoardVariant>,
-    board_settings: settings::BoardSettings,
+    board_settings: Option<settings::DeviceSettings>,
     serial: serial::SerialData,
 }
 
@@ -51,16 +44,14 @@ pub fn run() {
             serial::send_serial_message,
             serial::clear_serial_content,
             serial::set_baud_rate,
-            settings::upload_board_settings,
-            settings::download_board_settings,
-            settings::get_board_settings,
-            settings::set_lora_bandwidth,
-            settings::set_lora_frequency,
-            settings::set_lora_spreading_factor,
-            settings::set_lora_sync_word,
-            board::set_board_variant,
-            board::get_board_variant,
-            board::get_board_variants,
+            settings::device::upload_device_settings,
+            settings::device::download_device_settings,
+            settings::device::get_device_settings,
+            settings::device::set_device_settings,
+            settings::device::set_device_variant,
+            settings::device::get_device_variants,
+            settings::serial::set_serial_settings,
+            settings::serial::get_serial_settings,
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");

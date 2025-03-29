@@ -10,6 +10,7 @@ import { SettingsProvider } from "./context/SettingsProvider";
 import Device from "./routes/device";
 import SerialMonitor from "./routes/serial-monitor";
 import ErrorProvider from "./utils/error";
+import Metrics from "./routes/metrics";
 
 const router = createBrowserRouter([
   {
@@ -26,7 +27,11 @@ const router = createBrowserRouter([
         element: <Device />,
       },
       {
-        path: "/plot",
+        path: "/metrics",
+        element: <Metrics />,
+      },
+      {
+        path: "/map",
         element: <SerialMonitor />,
       },
       {

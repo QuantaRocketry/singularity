@@ -1,32 +1,38 @@
-import { useState, useEffect, useRef } from "react";
-import reactLogo from "../assets/react.svg";
+import { useState, useEffect } from "react";
 import { invoke } from "@tauri-apps/api/core";
-import { listen } from '@tauri-apps/api/event';
 import { showError } from "../utils/error";
 
 export function SerialSelector() {
   const [portSelect, setPortSelect] = useState("");
-  const [ports, setPorts] = useState([""])
+  const [ports, setPorts] = useState([""]);
   const [portConnected, setPortConnected] = useState(true);
 
   async function sendPort(p: string) {
     setPortSelect(p);
-    await invoke("set_port", { port: p }).then(() => {
-      setPortConnected(true);
-    }).catch((e) => {
-      showError(e);
-      setPortConnected(false);
-    });
+    invoke("set_port", { port: p })
+      .then(() => {
+        setPortConnected(true);
+      })
+      .catch((e) => {
+        showError(e);
+        setPortConnected(false);
+      });
   }
 
   async function getAvailablePorts() {
-    await invoke("get_ports").then((v) => { setPorts(v as string[]) });
+    invoke("get_ports").then((v) => {
+      setPorts(v as string[]);
+    });
   }
 
   async function getActivePort() {
-    await invoke("get_active_port")
-      .then((p) => { setPortSelect(p as string) })
-      .catch((_) => { setPortSelect("") });
+    invoke("get_active_port")
+      .then((p) => {
+        setPortSelect(p as string);
+      })
+      .catch((_) => {
+        setPortSelect("");
+      });
   }
 
   useEffect(() => {
@@ -36,12 +42,17 @@ export function SerialSelector() {
 
   return (
     <div className="join">
-      <form onSubmit={(e) => {
-        e.preventDefault();
-        sendPort(portSelect)
-      }}>
+      <form
+        onSubmit={(e) => {
+          e.preventDefault();
+          sendPort(portSelect);
+        }}
+      >
         <input
-          className={"input input-bordered join-item w-40" + (portConnected ? "" : " input-error")}
+          className={
+            "input input-bordered join-item w-40" +
+            (portConnected ? "" : " input-error")
+          }
           id="portInput"
           value={portSelect}
           onChange={(e) => setPortSelect(e.currentTarget.value)}
@@ -49,12 +60,29 @@ export function SerialSelector() {
         />
       </form>
       <div className="dropdown dropdown-end">
-        <a tabIndex={0} role="button" className="btn btn-neutral join-item" onClick={() => { getAvailablePorts() }}>Port</a>
-        <ul tabIndex={0} className="dropdown-content menu bg-base-100 rounded-box z-[1] w-52 p-2 shadow">
-          {ports.map((p, index) => { return <li key={index}><a onClick={(e) => sendPort(p)}>{p}</a></li> })}
+        <a
+          tabIndex={0}
+          role="button"
+          className="btn btn-neutral join-item"
+          onClick={() => {
+            getAvailablePorts();
+          }}
+        >
+          Port
+        </a>
+        <ul
+          tabIndex={0}
+          className="dropdown-content menu bg-base-100 rounded-box z-[1] w-52 p-2 shadow"
+        >
+          {ports.map((p, index) => {
+            return (
+              <li key={index}>
+                <a onClick={() => sendPort(p)}>{p}</a>
+              </li>
+            );
+          })}
         </ul>
       </div>
-
     </div>
-  )
+  );
 }
