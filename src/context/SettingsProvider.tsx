@@ -8,19 +8,24 @@ import {
   SetStateAction,
 } from "react";
 import { DeviceSettings } from "./settings/Device";
+import { SerialSettings } from "./settings/Serial";
 
 interface SettingsContextInterface {
   theme: string;
   setTheme: (theme: string) => void;
   deviceSettings: DeviceSettings | undefined;
   setDeviceSettings: Dispatch<SetStateAction<DeviceSettings | undefined>>;
+  serialSettings: SerialSettings | undefined;
+  setSerialSettings: Dispatch<SetStateAction<SerialSettings | undefined>>;
 }
 
 export const SettingsContext = createContext<SettingsContextInterface>({
   theme: localStorage.getItem("theme") || "dark",
-  setTheme: () => {},
+  setTheme: () => { },
   deviceSettings: undefined,
-  setDeviceSettings: () => {},
+  setDeviceSettings: () => { },
+  serialSettings: undefined,
+  setSerialSettings: () => { },
 });
 
 export const useSettingsContext = () => useContext(SettingsContext);
@@ -30,6 +35,9 @@ export const SettingsProvider = ({ children }: { children: ReactNode }) => {
   const [deviceSettings, setDeviceSettings] = useState<
     DeviceSettings | undefined
   >(undefined);
+  const [serialSettings, setSerialSettings] = useState<
+    SerialSettings | undefined
+  >(undefined);
 
   useEffect(() => {
     document.body.setAttribute("data-theme", theme);
@@ -38,7 +46,7 @@ export const SettingsProvider = ({ children }: { children: ReactNode }) => {
 
   return (
     <SettingsContext.Provider
-      value={{ theme, setTheme, deviceSettings, setDeviceSettings }}
+      value={{ theme, setTheme, deviceSettings, setDeviceSettings, serialSettings, setSerialSettings }}
     >
       {children}
     </SettingsContext.Provider>

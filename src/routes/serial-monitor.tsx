@@ -2,7 +2,7 @@ import { useState, useEffect, useRef } from "react";
 import { invoke } from "@tauri-apps/api/core";
 import { listen } from "@tauri-apps/api/event";
 import { showError } from "../utils/error";
-import { SerialSelector } from "../utils/serial";
+import { SerialOptions, SerialSelector } from "../utils/serial";
 import { Header } from "../utils/header";
 
 function SerialStream() {
@@ -88,27 +88,7 @@ function SerialStream() {
           <dialog id="serial-settings-modal" className="modal">
             <div className="modal-box">
               <h3 className="font-bold text-lg">Settings</h3>
-              <label className="form-control w-full max-w-xs">
-                <div className="label">
-                  <span className="label-text">Baud Rate</span>
-                </div>
-                <select
-                  className="select select-bordered"
-                  onChange={() => {
-                    showError("unimplemented");
-                  }}
-                  defaultValue={0}
-                >
-                  <option disabled value={0}>
-                    Select Baud Rate...
-                  </option>
-                  <option value={9600}>9600</option>
-                  <option value={31250}>31250</option>
-                  <option value={57600}>57600</option>
-                  <option value={115200}>115200</option>
-                  <option value={921600}>921600</option>
-                </select>
-              </label>
+              <SerialOptions />
               <p className="py-4">
                 Press ESC key or click the button below to close
               </p>
