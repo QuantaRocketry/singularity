@@ -67,3 +67,10 @@ jobs:
           # releaseDraft: true
           # prerelease: true
           args: ${{ matrix.args }}
+
+      - name: Upload Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: tauri-app-build
+          path: src-tauri/target/release/bundle/msi/
+          retention-days: 5
