@@ -1,6 +1,9 @@
 import { useState, useEffect } from "react";
 import { invoke } from "@tauri-apps/api/core";
 import { showError } from "../utils/error";
+import { useContext } from "react";
+import { SerialSettings } from "../context/settings/Serial";
+import { SettingsContext } from "../context/SettingsProvider";
 
 export function SerialSelector() {
   const [portSelect, setPortSelect] = useState("");
@@ -82,6 +85,43 @@ export function SerialSelector() {
             );
           })}
         </ul>
+      </div>
+    </div>
+  );
+}
+
+export function SerialOptions() {
+  const { serialSettings, setSerialSettings } = useContext(SettingsContext);
+
+  if (!serialSettings || !("lora" in serialSettings.data)) {
+    // showError("Failed to load LoRa settings.");
+    return (<div>Failed to load LoRa settings.</div>); // Or handle other cases
+  }
+
+  const loraSettings = serialSettings.data.lora;
+
+  const updateLoRaSetting = (key: keyof typeof loraSettings, value: any) => {
+    if (setSerialSettings) {
+      if (serialSettings && "lora" in serialSettings.data) {
+        setSerialSettings({
+          ...serialSettings,
+          data: {
+            lora: {
+              ...serialSettings.data.lora,
+              [key]: value,
+            },
+          },
+        } as SerialSettings);
+      }
+    }
+  };
+
+  return (
+    <div>
+      <div className="card card-bordered card-compact shadow-md">
+        <div className="card-body flex flex-column">
+          <h1 className="text-lg">Serial</h1>
+        </div>
       </div>
     </div>
   );
