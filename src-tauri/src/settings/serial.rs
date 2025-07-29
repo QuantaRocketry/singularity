@@ -1,3 +1,4 @@
+use crate::protocol::Protocol;
 use crate::AppData;
 use serde::{Deserialize, Serialize};
 use std::sync::Mutex;
@@ -5,6 +6,7 @@ use std::sync::Mutex;
 #[derive(Default, Serialize, Deserialize, Debug, PartialEq, Clone, Copy)]
 pub struct SerialSettings {
     pub baud_rate: u32,
+    pub protocol: Protocol,
 }
 
 #[tauri::command]
