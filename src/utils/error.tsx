@@ -15,6 +15,13 @@ export default function ErrorProvider() {
 }
 
 export function showError(error: string) {
-  (document.getElementById('error-message') as HTMLElement).innerText = error;
-  (document.getElementById('error-modal') as HTMLDialogElement).showModal();
+  let message = document.getElementById('error-message') as HTMLElement;
+  if (message != undefined) {
+    message.innerText = error;
+  }
+
+  let modal = document.getElementById('error-modal') as HTMLDialogElement;
+  if (modal != undefined) {
+    modal.showModal();
+  }
 }
