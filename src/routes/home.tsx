@@ -1,5 +1,5 @@
 import { useState } from "react";
-import reactLogo from "../assets/react.svg";
+// import reactLogo from "../assets/react.svg";
 import { invoke } from "@tauri-apps/api/core";
 export default function Home() {
   const [greetMsg, setGreetMsg] = useState("");

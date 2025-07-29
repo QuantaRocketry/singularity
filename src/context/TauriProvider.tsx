@@ -2,7 +2,7 @@ import React, { useState, useEffect, useContext, ReactNode } from "react";
 import * as tauriPath from "@tauri-apps/api/path";
 import * as fs from "@tauri-apps/plugin-fs";
 import * as os from "@tauri-apps/plugin-os";
-import tauriConfJson from "../../src-tauri/tauri.conf.json";
+// import tauriConfJson from "../../src-tauri/tauri.conf.json";
 
 declare global {
   interface Window {
