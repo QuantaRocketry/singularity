@@ -68,10 +68,18 @@ jobs:
           # prerelease: true
           args: ${{ matrix.args }}
 
-      - name: Upload Artifact (Windows)
-        if: matrix.platform == 'windows-latest'
+      - name: Upload Artifact (win + linux)
+        if: matrix.platform == 'windows-latest' || matrix.platform == 'ubuntu-22.04'
         uses: actions/upload-artifact@v4
         with:
           name: tauri-app-build
-          path: src-tauri/target/release/bundle/msi/
+          path: src-tauri/target/release/bundle/
+          retention-days: 5
+
+      - name: Upload Artifact (mac)
+        if: matrix.platform == 'macos-latest'
+        uses: actions/upload-artifact@v4
+        with:
+          name: tauri-app-build
+          path: src-tauri/target/*/release/bundle/
           retention-days: 5
