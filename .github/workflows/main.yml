@@ -72,7 +72,7 @@ jobs:
         if: matrix.platform == 'windows-latest' || matrix.platform == 'ubuntu-22.04'
         uses: actions/upload-artifact@v4
         with:
-          name: ${{ matrix.platform }}-build
+          name: ${{ matrix.platform }}-${{ matrix.arch }}-build
           path: src-tauri/target/release/bundle/
           retention-days: 5
 
@@ -80,6 +80,6 @@ jobs:
         if: matrix.platform == 'macos-latest'
         uses: actions/upload-artifact@v4
         with:
-          name: tauri-app-build
+          name: ${{ matrix.platform }}-${{ matrix.arch }}-build
           path: src-tauri/target/*/release/bundle/
           retention-days: 5
