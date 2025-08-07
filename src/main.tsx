@@ -9,6 +9,7 @@ import "./styles.css";
 import { SettingsProvider } from "./context/SettingsProvider";
 import Device from "./routes/device";
 import SerialMonitor from "./routes/serial-monitor";
+import LiveMap from "./routes/live-map";
 import ErrorProvider from "./utils/error";
 import Metrics from "./routes/metrics";
 
@@ -32,7 +33,7 @@ const router = createBrowserRouter([
       },
       {
         path: "/map",
-        element: <SerialMonitor />,
+        element: <LiveMap />,
       },
       {
         path: "/settings",
