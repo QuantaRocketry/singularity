@@ -17,6 +17,25 @@ just install
 just dev
 ```
 
+## Installation
+
+### Debian-Based
+
+```sh
+sudo apt install \
+  build-essential \
+  curl \
+  wget \
+  file \
+  libxdo-dev \
+  libssl-dev \
+  librsvg2-dev \
+  libsoup-3.0-dev \
+  libayatana-appindicator3-dev \
+  libwebkit2gtk-4.1-dev \
+  libjavascriptcoregtk-4.1-dev
+```
+
 ## Screenshots
 
 ![Cover Image](./public/cover.png)
