@@ -20,3 +20,5 @@ just dev
 ## Screenshots
 
 ![Cover Image](./public/cover.png)
+
+![Map Image](./public/map.png)
