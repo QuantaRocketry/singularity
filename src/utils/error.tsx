@@ -1,20 +1,50 @@
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
+import { useEffect, useState } from "react";
+
 export default function ErrorProvider() {
+  const [open, setOpen] = useState(false);
+  const [message, setMessage] = useState<string | JSX.Element | undefined>(
+    undefined,
+  );
+
+  useEffect(() => {
+    const handleOpen = (e: any) => {
+      setMessage(e.detail);
+      setOpen(true);
+    };
+
+    window.addEventListener("open-global-error", handleOpen);
+    return () => window.removeEventListener("open-global-error", handleOpen);
+  }, []);
+
   return (
-    <dialog id="error-modal" className="modal">
-      <div className="modal-box">
-        <h3 className="font-bold text-lg">Error</h3>
-        <p id="error-message" className="py-4">Press ESC key or click the button below to close</p>
-        <div className="modal-action">
-          <form method="dialog">
-            <button className="btn">Close</button>
-          </form>
-        </div>
-      </div>
-    </dialog>
-  )
+    <AlertDialog open={open} onOpenChange={setOpen}>
+      <AlertDialogContent>
+        <AlertDialogHeader>
+          <AlertDialogTitle>An Error Occurred</AlertDialogTitle>
+          <AlertDialogDescription>
+            {message || "An unexpected error has occurred."}
+          </AlertDialogDescription>
+        </AlertDialogHeader>
+        <AlertDialogFooter>
+          <AlertDialogAction onClick={() => setOpen(false)}>
+            Dismiss
+          </AlertDialogAction>
+        </AlertDialogFooter>
+      </AlertDialogContent>
+    </AlertDialog>
+  );
 }
 
-export function showError(error: string) {
-  (document.getElementById('error-message') as HTMLElement).innerText = error;
-  (document.getElementById('error-modal') as HTMLDialogElement).showModal();
-}
+export const showError = (message: string | JSX.Element) => {
+  const event = new CustomEvent("open-global-error", { detail: message });
+  window.dispatchEvent(event);
+};

@@ -1,12 +1,14 @@
-import { Header } from "../utils/header";
-import { SerialSelector } from "../utils/serial";
+import { EmptyPage } from "@/components/empty-page";
+import Page from "@/utils/page";
 
 export default function Metrics() {
   return (
-    <div className="flex flex-col p-5 space-y-5 h-full">
-      <Header title="Metrics">
-        <SerialSelector />
-      </Header>
-    </div>
+    <Page
+      title="Metrics"
+      hasSerialSelector
+      className="h-full w-full items-center content-center"
+    >
+      <EmptyPage />
+    </Page>
   );
 }

@@ -1,6 +1,6 @@
 use std::io::{self, Write};
+use std::thread;
 use std::time::Duration;
-use std::{sync::Mutex, thread};
 
 use crate::{settings, AppData};
 
@@ -40,16 +40,13 @@ fn open_port(
 }
 
 #[tauri::command]
-pub async fn set_port(
-    port: &str,
-    state: tauri::State<'_, Mutex<AppData>>,
-) -> Result<String, String> {
-    let mut state = state.lock().unwrap();
-    state.serial.connected_port = None;
-    match open_port(port, &state.serial.settings) {
+pub async fn set_port(port: &str, state: tauri::State<'_, AppData>) -> Result<String, String> {
+    let mut serial = state.serial.lock().unwrap();
+    serial.connected_port = None;
+    match open_port(port, &serial.settings) {
         Ok(p) => {
             let name = p.name().unwrap_or("Unknown".to_string());
-            state.serial.connected_port = Some(p);
+            serial.connected_port = Some(p);
             Ok(name)
         }
         Err(err) => Err(format!("Failed to connect to {}\n{}", port, err)),
@@ -59,11 +56,11 @@ pub async fn set_port(
 #[tauri::command]
 pub async fn set_baud_rate(
     baud_rate: u32,
-    state: tauri::State<'_, Mutex<AppData>>,
+    state: tauri::State<'_, AppData>,
 ) -> Result<String, String> {
-    let mut state = state.lock().unwrap();
-    state.serial.settings.baud_rate = baud_rate;
-    let port = if let Some(p) = &state.serial.connected_port {
+    let mut serial = state.serial.lock().unwrap();
+    serial.settings.baud_rate = baud_rate;
+    let port = if let Some(p) = &serial.connected_port {
         if let Some(name) = p.name() {
             name
         } else {
@@ -73,11 +70,11 @@ pub async fn set_baud_rate(
         return Ok("".to_string());
     };
 
-    state.serial.connected_port = None;
-    match open_port(&port, &state.serial.settings) {
+    serial.connected_port = None;
+    match open_port(&port, &serial.settings) {
         Ok(p) => {
             let name = p.name().unwrap_or("Unknown".to_string());
-            state.serial.connected_port = Some(p);
+            serial.connected_port = Some(p);
             Ok(name)
         }
         Err(err) => Err(format!("Failed to connect to {}\n{}", port, err)),
@@ -85,9 +82,9 @@ pub async fn set_baud_rate(
 }
 
 #[tauri::command]
-pub async fn get_active_port(state: tauri::State<'_, Mutex<AppData>>) -> Result<String, String> {
-    let state = state.lock().unwrap();
-    if let Some(port) = &state.serial.connected_port {
+pub async fn get_active_port(state: tauri::State<'_, AppData>) -> Result<String, String> {
+    let serial = state.serial.lock().unwrap();
+    if let Some(port) = &serial.connected_port {
         let name = port.name().unwrap_or("".to_string());
         return Ok(name);
     }
@@ -97,11 +94,11 @@ pub async fn get_active_port(state: tauri::State<'_, Mutex<AppData>>) -> Result<
 #[tauri::command]
 pub async fn send_serial_message(
     message: String,
-    state: tauri::State<'_, Mutex<AppData>>,
+    state: tauri::State<'_, AppData>,
 ) -> Result<String, String> {
-    let state = state.lock().unwrap();
+    let serial = state.serial.lock().unwrap();
 
-    if let Some(p) = &state.serial.connected_port {
+    if let Some(p) = &serial.connected_port {
         let mut port = p.try_clone().expect("Failed to obtain clone");
         let message = message + "\n";
         match port.write(message.as_bytes()) {
@@ -124,17 +121,14 @@ pub async fn send_serial_message(
 }
 
 #[tauri::command]
-pub async fn get_serial_content(
-    state: tauri::State<'_, Mutex<AppData>>,
-) -> Result<Vec<String>, String> {
-    let state = state.lock().unwrap();
-    return Ok(state.serial.content.clone());
+pub async fn get_serial_content(state: tauri::State<'_, AppData>) -> Result<Vec<String>, String> {
+    return Ok(state.serial.lock().unwrap().content.clone());
 }
 
 #[tauri::command]
-pub async fn clear_serial_content(state: tauri::State<'_, Mutex<AppData>>) -> Result<(), String> {
-    let mut state = state.lock().unwrap();
-    state.serial.content = vec!["".to_string()];
+pub async fn clear_serial_content(state: tauri::State<'_, AppData>) -> Result<(), String> {
+    let mut serial = state.serial.lock().unwrap();
+    serial.content = vec!["".to_string()];
     return Ok(());
 }
 
@@ -143,10 +137,10 @@ pub async fn serial_monitor(handle: &tauri::AppHandle) -> Result<(), String> {
     loop {
         thread::sleep(Duration::from_millis(100));
         let state_handle = handle.clone();
-        let state = state_handle.state::<Mutex<AppData>>();
-        let mut state = state.lock().unwrap();
+        let state = state_handle.state::<AppData>();
+        let mut serial = state.serial.lock().unwrap();
 
-        if let Some(p) = &state.serial.connected_port {
+        if let Some(p) = &serial.connected_port {
             let mut port = p.try_clone().expect("Failed to obtain clone");
             match port.read(serial_buf.as_mut_slice()) {
                 Ok(t) => {
@@ -157,15 +151,14 @@ pub async fn serial_monitor(handle: &tauri::AppHandle) -> Result<(), String> {
                             "serial_message_received",
                             String::from_utf8_lossy(line).to_string(),
                         );
-                        state
-                            .serial
+                        serial
                             .content
                             .push(String::from_utf8_lossy(line).to_string());
                     });
                 }
                 Err(ref e) => match e.kind() {
                     io::ErrorKind::BrokenPipe => {
-                        state.serial.connected_port = None;
+                        serial.connected_port = None;
                         let _ = state_handle.emit("serial_disconnected", ());
                         eprintln!("Port disconnected")
                     }

@@ -1,16 +1,14 @@
 import { useRouteError } from "react-router-dom";
+import Page from "./utils/page";
+import { EmptyPage } from "./components/empty-page";
 
 export default function ErrorPage() {
   const error: any = useRouteError();
   console.error(error);
 
   return (
-    <div id="error-page">
-      <h1>Oops!</h1>
-      <p>Sorry, an unexpected error has occurred.</p>
-      <p>
-        <i>{error.statusText || error.message}</i>
-      </p>
-    </div>
+    <Page title={"Error"} className="h-full w-full items-center content-center">
+      <EmptyPage />
+    </Page>
   );
 }

@@ -1,10 +1,33 @@
 import { useState, useEffect } from "react";
 import { invoke } from "@tauri-apps/api/core";
 import { showError } from "../utils/error";
+import {
+  Dialog,
+  DialogClose,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
+import { Button } from "@/components/ui/button";
+import { Field, FieldGroup } from "@/components/ui/field";
+import { Label } from "@/components/ui/label";
+import { Input } from "@/components/ui/input";
+import { AiOutlineSetting } from "react-icons/ai";
+import {
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 export function SerialSelector() {
-  const [portSelect, setPortSelect] = useState("");
-  const [ports, setPorts] = useState([""]);
+  const [portSelect, setPortSelect] = useState<string | undefined>(undefined);
+  const [ports, setPorts] = useState<string[]>([]);
   const [portConnected, setPortConnected] = useState(true);
 
   async function sendPort(p: string) {
@@ -40,49 +63,84 @@ export function SerialSelector() {
     getAvailablePorts();
   }, []);
 
+  useEffect(() => {}, [portSelect, ports]);
+
   return (
-    <div className="join">
-      <form
-        onSubmit={(e) => {
-          e.preventDefault();
-          sendPort(portSelect);
-        }}
-      >
-        <input
-          className={
-            "input input-bordered join-item w-40" +
-            (portConnected ? "" : " input-error")
-          }
-          id="portInput"
-          value={portSelect}
-          onChange={(e) => setPortSelect(e.currentTarget.value)}
-          placeholder="Select a port..."
-        />
-      </form>
-      <div className="dropdown dropdown-end">
-        <a
-          tabIndex={0}
-          role="button"
-          className="btn btn-neutral join-item"
-          onClick={() => {
-            getAvailablePorts();
+    <FieldGroup className="min-w-3xs">
+      <Field>
+        <Select
+          onValueChange={(value) => {
+            sendPort(value);
           }}
+          value={portSelect}
         >
-          Port
-        </a>
-        <ul
-          tabIndex={0}
-          className="dropdown-content menu bg-base-100 rounded-box z-[1] w-52 p-2 shadow"
-        >
-          {ports.map((p, index) => {
-            return (
-              <li key={index}>
-                <a onClick={() => sendPort(p)}>{p}</a>
-              </li>
-            );
-          })}
-        </ul>
-      </div>
+          <SelectTrigger aria-invalid={!portConnected}>
+            <SelectValue placeholder="Select a port" />
+          </SelectTrigger>
+          <SelectContent position={"popper"}>
+            <SelectGroup>
+              {ports.length === 0 && (
+                <SelectItem disabled value="null">
+                  No ports available
+                </SelectItem>
+              )}
+              {ports.map((port, index) => (
+                <SelectItem key={index} value={port}>
+                  {port}
+                </SelectItem>
+              ))}
+            </SelectGroup>
+          </SelectContent>
+        </Select>
+      </Field>
+    </FieldGroup>
+  );
+}
+
+function SerialSettings() {
+  return (
+    <Dialog>
+      <form>
+        <DialogTrigger asChild>
+          <Button variant="outline" size="icon" aria-label="Settings">
+            <AiOutlineSetting />
+          </Button>
+        </DialogTrigger>
+        <DialogContent className="sm:max-w-sm">
+          <DialogHeader>
+            <DialogTitle>Serial Settings</DialogTitle>
+            <DialogDescription>
+              Make changes to your profile here. Click save when you&apos;re
+              done.
+            </DialogDescription>
+          </DialogHeader>
+          <FieldGroup>
+            <Field>
+              <Label htmlFor="name-1">Name</Label>
+              <Input id="name-1" name="name" defaultValue="Pedro Duarte" />
+            </Field>
+            <Field>
+              <Label htmlFor="username-1">Username</Label>
+              <Input id="username-1" name="username" defaultValue="@peduarte" />
+            </Field>
+          </FieldGroup>
+          <DialogFooter>
+            <DialogClose asChild>
+              <Button variant="outline">Cancel</Button>
+            </DialogClose>
+            <Button type="submit">Save changes</Button>
+          </DialogFooter>
+        </DialogContent>
+      </form>
+    </Dialog>
+  );
+}
+
+export function Serial() {
+  return (
+    <div className="flex flex-row gap-2">
+      <SerialSelector />
+      <SerialSettings />
     </div>
   );
 }

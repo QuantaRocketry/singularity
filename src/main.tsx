@@ -1,6 +1,6 @@
 import React from "react";
 import ReactDOM from "react-dom/client";
-import { createBrowserRouter, RouterProvider } from "react-router-dom";
+import { createHashRouter, RouterProvider } from "react-router-dom";
 import Layout from "./layout";
 import ErrorPage from "./error-page";
 import Settings from "./routes/settings";
@@ -9,11 +9,12 @@ import "./styles.css";
 import { SettingsProvider } from "./context/SettingsProvider";
 import Device from "./routes/device";
 import SerialMonitor from "./routes/serial-monitor";
-import LiveMap from "./routes/live-map";
+import Locator from "./routes/locator";
 import ErrorProvider from "./utils/error";
 import Metrics from "./routes/metrics";
+import { TooltipProvider } from "@/components/ui/tooltip";
 
-const router = createBrowserRouter([
+const router = createHashRouter([
   {
     path: "/",
     element: <Layout />,
@@ -32,8 +33,8 @@ const router = createBrowserRouter([
         element: <Metrics />,
       },
       {
-        path: "/map",
-        element: <LiveMap />,
+        path: "/locator",
+        element: <Locator />,
       },
       {
         path: "/settings",
@@ -47,9 +48,11 @@ ReactDOM.createRoot(document.getElementById("root") as HTMLElement).render(
   <React.StrictMode>
     <TauriProvider>
       <SettingsProvider>
-        <RouterProvider router={router} />
-        <ErrorProvider />
+        <TooltipProvider>
+          <RouterProvider router={router} />
+          <ErrorProvider />
+        </TooltipProvider>
       </SettingsProvider>
     </TauriProvider>
-  </React.StrictMode>
+  </React.StrictMode>,
 );

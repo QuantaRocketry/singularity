@@ -1,11 +1,17 @@
 // Prevents additional console window on Windows in release, DO NOT REMOVE!!
 #![cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
 
+include!(concat!(env!("OUT_DIR"), "/env.rs"));
+
+mod odometry;
 mod serial;
 mod settings;
 
+use std::fs;
 use std::sync::Mutex;
 use tauri::Manager;
+
+use crate::odometry::OdometryData;
 
 // Learn more about Tauri commands at https://tauri.app/v1/guides/features/command
 #[tauri::command]
@@ -15,8 +21,10 @@ async fn greet(name: &str) -> Result<String, String> {
 
 #[derive(Default)]
 struct AppData {
-    board_settings: Option<settings::DeviceSettings>,
-    serial: serial::SerialData,
+    pub app_settings: Mutex<settings::AppSettings>,
+    pub board_settings: Mutex<Option<settings::DeviceSettings>>,
+    pub serial: Mutex<serial::SerialData>,
+    pub odometry: OdometryData,
 }
 
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
@@ -26,7 +34,13 @@ pub fn run() {
         .plugin(tauri_plugin_os::init())
         .setup(|app| {
             let handler_clone = app.handle().clone();
-            app.manage(Mutex::new(AppData::default()));
+            let path = app.path().app_data_dir().unwrap().join(settings::FILE_NAME);
+            let app_settings = settings::AppSettings::load(path);
+
+            let app_data = AppData::default();
+            *app_data.app_settings.lock().unwrap() = app_settings;
+
+            app.manage(app_data);
             tauri::async_runtime::spawn(async move {
                 if let Err(e) = serial::serial_monitor(&handler_clone).await {
                     eprintln!("Error in serial monitor: {}", e);
@@ -44,6 +58,8 @@ pub fn run() {
             serial::send_serial_message,
             serial::clear_serial_content,
             serial::set_baud_rate,
+            settings::app::get_cesium_ion_token,
+            settings::app::set_cesium_ion_token,
             settings::device::upload_device_settings,
             settings::device::download_device_settings,
             settings::device::get_device_settings,

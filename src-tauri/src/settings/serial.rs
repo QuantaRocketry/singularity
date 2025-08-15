@@ -9,18 +9,16 @@ pub struct SerialSettings {
 
 #[tauri::command]
 pub async fn get_serial_settings(
-    state: tauri::State<'_, Mutex<AppData>>,
+    state: tauri::State<'_, AppData>,
 ) -> Result<SerialSettings, String> {
-    let state = state.lock().unwrap();
-    Ok(state.serial.settings.clone())
+    Ok(state.serial.lock().unwrap().settings.clone())
 }
 
 #[tauri::command]
 pub async fn set_serial_settings(
     settings: SerialSettings,
-    state: tauri::State<'_, Mutex<AppData>>,
+    state: tauri::State<'_, AppData>,
 ) -> Result<(), String> {
-    let mut state = state.lock().unwrap();
-    state.serial.settings = settings;
+    state.serial.lock().unwrap().settings = settings;
     Ok(())
 }

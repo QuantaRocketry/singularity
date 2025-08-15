@@ -17,7 +17,7 @@ interface SettingsContextInterface {
 }
 
 export const SettingsContext = createContext<SettingsContextInterface>({
-  theme: localStorage.getItem("theme") || "dark",
+  theme: localStorage.getItem("theme") || "light",
   setTheme: () => {},
   deviceSettings: undefined,
   setDeviceSettings: () => {},
@@ -32,6 +32,9 @@ export const SettingsProvider = ({ children }: { children: ReactNode }) => {
   >(undefined);
 
   useEffect(() => {
+    const root = window.document.documentElement;
+    root.classList.remove("light", "dark");
+    root.classList.add(theme);
     document.body.setAttribute("data-theme", theme);
     localStorage.setItem("theme", theme);
   }, [theme]);

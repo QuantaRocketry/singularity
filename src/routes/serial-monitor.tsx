@@ -1,31 +1,47 @@
 import { useState, useEffect, useRef } from "react";
 import { invoke } from "@tauri-apps/api/core";
 import { listen } from "@tauri-apps/api/event";
-import { showError } from "../utils/error";
-import { SerialSelector } from "../utils/serial";
-import { Header } from "../utils/header";
+import { showError } from "@/utils/error";
+import Page from "@/utils/page";
+import { Card, CardContent } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
 
 function SerialStream() {
   const [content, setContent] = useState([""]);
   const [inputMessage, setInputMessage] = useState("");
 
   function appendContent(s: string) {
-    setContent(content.concat([s]));
+    setContent((prev) => [...prev, s]);
   }
 
   async function sendSerialMessage(s: string) {
-    appendContent(s);
     setInputMessage("");
-    invoke("send_serial_message", { message: s }).catch((e) => {
-      showError(e);
-    });
+    invoke("send_serial_message", { message: s })
+      .then((_) => {
+        appendContent(s);
+      })
+      .catch((e) => {
+        showError(e);
+      });
   }
 
-  listen<string>("serial_message_received", () => {
-    invoke("get_serial_content").then((c) => {
-      setContent(c as string[]);
-    });
-  });
+  useEffect(() => {
+    let unlisten: (() => void) | undefined;
+
+    async function serialListener() {
+      unlisten = await listen<string>("serial_message_received", () => {
+        invoke("get_serial_content").then((c) => {
+          setContent(c as string[]);
+        });
+      });
+    }
+
+    serialListener();
+    return () => {
+      if (unlisten) unlisten();
+    };
+  }, []);
 
   useEffect(() => {
     invoke("get_serial_content").then((c) => {
@@ -46,92 +62,52 @@ function SerialStream() {
   }, [content]);
 
   return (
-    <div className="card card-bordered card-compact shadow-md flex-grow">
-      <div className="card-body flex flex-col h-0">
-        <div ref={contentRef} className="flex-grow overflow-y-auto">
+    <Card className="flex flex-col h-full min-h-0 grow">
+      <CardContent className="flex flex-col flex-1 min-h-0 gap-4">
+        {/* The main scrollable area */}
+        <div
+          id="serial-content"
+          ref={contentRef}
+          className="flex-1 overflow-y-auto border rounded-md p-2 bg-slate-50 dark:bg-slate-900 font-mono text-sm"
+        >
           {content.map((line, index) => (
-            <p key={index}>{line}</p>
+            <div key={index} className="whitespace-pre-wrap">
+              {line}
+            </div>
           ))}
         </div>
-        <div className="flex flex-row items-end">
+
+        <div>
           <form
-            className="join mt-2 flex-grow"
             onSubmit={(e) => {
               e.preventDefault();
-              sendSerialMessage(e.currentTarget.serialInput.value);
+              const form = e.currentTarget;
+              const input = form.elements.namedItem(
+                "serialInput",
+              ) as HTMLInputElement;
+              sendSerialMessage(input.value);
             }}
+            className="flex w-full gap-2"
           >
-            <input
+            <Input
               id="serialInput"
               value={inputMessage}
               onChange={(e) => setInputMessage(e.target.value)}
-              className="input input-bordered join-item flex-grow"
               placeholder="Send a message..."
+              className="flex-1"
             />
-            <button type="submit" className="btn btn-neutral join-item">
-              Send
-            </button>
+            <Button type="submit">Send</Button>
           </form>
-
-          <button
-            className="btn btn-neutral ms-1"
-            onClick={() =>
-              (
-                document.getElementById(
-                  "serial-settings-modal"
-                ) as HTMLDialogElement
-              ).showModal()
-            }
-          >
-            settings
-          </button>
-          <dialog id="serial-settings-modal" className="modal">
-            <div className="modal-box">
-              <h3 className="font-bold text-lg">Settings</h3>
-              <label className="form-control w-full max-w-xs">
-                <div className="label">
-                  <span className="label-text">Baud Rate</span>
-                </div>
-                <select
-                  className="select select-bordered"
-                  onChange={() => {
-                    showError("unimplemented");
-                  }}
-                  defaultValue={0}
-                >
-                  <option disabled value={0}>
-                    Select Baud Rate...
-                  </option>
-                  <option value={9600}>9600</option>
-                  <option value={31250}>31250</option>
-                  <option value={57600}>57600</option>
-                  <option value={115200}>115200</option>
-                  <option value={921600}>921600</option>
-                </select>
-              </label>
-              <p className="py-4">
-                Press ESC key or click the button below to close
-              </p>
-              <div className="modal-action">
-                <form method="dialog">
-                  <button className="btn">Close</button>
-                </form>
-              </div>
-            </div>
-          </dialog>
         </div>
-      </div>
-    </div>
+      </CardContent>
+    </Card>
   );
 }
 
 export default function SerialMonitor() {
   return (
-    <div className="flex flex-col p-5 space-y-5 h-full">
-      <Header title="Serial Monitor">
-        <SerialSelector />
-      </Header>
+    <Page title="Serial Monitor" hasSerialSelector>
       <SerialStream />
-    </div>
+    </Page>
   );
 }

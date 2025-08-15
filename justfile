@@ -13,7 +13,8 @@ build:
 # Run the Tauri app in development mode (with live reloading)
 dev:
     # Run frontend dev server (e.g., Vite, Webpack, etc.)
-    WEBKIT_DISABLE_DMABUF_RENDERER=1 pnpm tauri dev
+    # WEBKIT_DISABLE_DMABUF_RENDERER=1 pnpm tauri dev
+    pnpm tauri dev
 
 # Test the app
 test:

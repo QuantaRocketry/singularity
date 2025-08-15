@@ -1,5 +1,5 @@
 [package]
-name = "tauri-tailwind"
+name = "singularity"
 version = "0.0.0"
 description = "A Tauri App"
 authors = ["you"]
@@ -12,18 +12,19 @@ edition = "2021"
 # The `_lib` suffix may seem redundant but it is necessary
 # to make the lib name unique and wouldn't conflict with the bin name.
 # This seems to be only an issue on Windows, see https://github.com/rust-lang/cargo/issues/8519
-name = "tauri_app_lib"
+name = "singularity_app_lib"
 crate-type = ["staticlib", "cdylib", "rlib"]
 
 [build-dependencies]
-tauri-build = { version = "2", features = [] }
+tauri-build = { version = "2.3.1", features = [] }
+dotenv = "0.15"
 
 [dependencies]
 tauri = { version = "2", features = [] }
 serde = { version = "1.0", features = ["derive"] }
 serde_json = "1.0"
-serialport = "4.6.1"
-tokio = { version = "1.42.0", features = ["time"] }
-tauri-plugin-os = "2"
-tauri-plugin-fs = "2"
-tauri-plugin-opener = "2"
+serialport = "4.7.2"
+tokio = { version = "1.47.1", features = ["time"] }
+tauri-plugin-os = "2.3.1"
+tauri-plugin-fs = "2.3"
+tauri-plugin-opener = "2.4"
