@@ -5,8 +5,10 @@ import { Header } from "../utils/header";
 import * as Cesium from "cesium";
 import "cesium/Build/Cesium/Widgets/widgets.css";
 
-// const CESIUM_ION_ACCESS_TOKEN = import.meta.env["CESIUM_ION_ACCESS_TOKEN"] || '';
-// Cesium.Ion.defaultAccessToken = CESIUM_ION_ACCESS_TOKEN;
+const CESIUM_ION_ACCESS_TOKEN: string = import.meta.env["VITE_CESIUM_ION_ACCESS_TOKEN"] || null;
+if (CESIUM_ION_ACCESS_TOKEN) {
+  Cesium.Ion.defaultAccessToken = CESIUM_ION_ACCESS_TOKEN;
+}
 
 const getOffsetPosition = (startPosition: Cesium.Cartesian3, east: number, north: number, up: number) => {
   const enuToFixed = Cesium.Transforms.eastNorthUpToFixedFrame(startPosition);
