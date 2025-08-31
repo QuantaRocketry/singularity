@@ -2,7 +2,7 @@ use std::io::{self, Write};
 use std::time::Duration;
 use std::{sync::Mutex, thread};
 
-use crate::{settings, AppData};
+use crate::{protocol, settings, AppData};
 
 use serialport::{self, SerialPort};
 use tauri::{Emitter, Manager};
@@ -12,6 +12,7 @@ pub struct SerialData {
     pub settings: settings::SerialSettings,
     pub content: Vec<String>,
     pub connected_port: Option<Box<dyn serialport::SerialPort>>,
+    pub protocol: Option<Box<dyn protocol::ProtocolTrait>>,
 }
 
 #[tauri::command]
@@ -150,17 +151,22 @@ pub async fn serial_monitor(handle: &tauri::AppHandle) -> Result<(), String> {
             let mut port = p.try_clone().expect("Failed to obtain clone");
             match port.read(serial_buf.as_mut_slice()) {
                 Ok(t) => {
-                    let message = &serial_buf[..t];
-                    let lines = message.split(|&b| b == b'\n');
+                    let message: String;
+                    if let Some(p) = &state.serial.protocol {
+                        message = p.parse_to_string(&serial_buf[..t]);
+                    } else {
+                        message = String::from_utf8_lossy(&serial_buf[..t]).into();
+                    }
+                    let lines = message.split(|b| b as u8 == b'\n');
                     lines.for_each(|line| {
                         let _result = state_handle.emit(
                             "serial_message_received",
-                            String::from_utf8_lossy(line).to_string(),
+                            line.to_string(),
                         );
                         state
                             .serial
                             .content
-                            .push(String::from_utf8_lossy(line).to_string());
+                            .push(line.to_string());
                     });
                 }
                 Err(ref e) => match e.kind() {
