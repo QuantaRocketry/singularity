@@ -33,3 +33,7 @@ install-run:
 build-package:
     just build
     just package
+
+check:
+    pnpm tsc
+    pnpm vite build

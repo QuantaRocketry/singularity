@@ -1,0 +1,77 @@
+import {
+  SerialSettingsForm,
+  SerialSettingsValues,
+} from "@/components/forms/serial-settings-form";
+import { Button } from "@/components/ui/button";
+import {
+  Dialog,
+  DialogContent,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger
+} from "@/components/ui/dialog";
+import { invoke } from "@tauri-apps/api/core";
+import { SettingsIcon } from "lucide-react";
+import { useEffect, useState } from "react";
+
+export function SerialSettingsDialog() {
+  const [open, setOpen] = useState(false);
+  const [serialSettings, setSerialSettings] = useState<SerialSettingsValues>();
+
+  function onSubmit(data: SerialSettingsValues) {
+    console.log(data);
+    setSerialSettings(data);
+    invoke("set_serial_settings", {
+      settings: { baud_rate: Number(data.baudRate) },
+    })
+      .then(() => {
+        setOpen(false);
+      })
+      .catch((e) => console.error(e));
+  }
+
+  useEffect(() => {
+    invoke("get_serial_settings")
+      .then((s) => {
+        let settings = s as { baud_rate: number };
+        setSerialSettings({ baudRate: settings.baud_rate.toString() });
+      })
+      .catch((e) => console.error(e));
+  }, []);
+
+  return (
+    <Dialog open={open}>
+      <DialogTrigger asChild>
+        <Button
+          variant="outline"
+          size="icon"
+          aria-label="Settings"
+          onClick={() => {
+            setOpen(true);
+          }}
+        >
+          <SettingsIcon />
+        </Button>
+      </DialogTrigger>
+      <DialogContent className="sm:max-w-sm">
+        <DialogHeader>
+          <DialogTitle>Serial Settings</DialogTitle>
+        </DialogHeader>
+        <SerialSettingsForm
+          id="form-serial-settings"
+          onSubmit={onSubmit}
+          defaultValues={serialSettings}
+        />
+        <DialogFooter>
+          <Button variant="outline" onClick={() => setOpen(false)}>
+            Cancel
+          </Button>
+          <Button type="submit" form="form-serial-settings">
+            Save
+          </Button>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
+  );
+}
