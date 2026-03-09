@@ -5,11 +5,12 @@ import {
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
+  DialogClose,
   DialogContent,
   DialogFooter,
   DialogHeader,
   DialogTitle,
-  DialogTrigger
+  DialogTrigger,
 } from "@/components/ui/dialog";
 import { invoke } from "@tauri-apps/api/core";
 import { SettingsIcon } from "lucide-react";
@@ -41,7 +42,7 @@ export function SerialSettingsDialog() {
   }, []);
 
   return (
-    <Dialog open={open}>
+    <Dialog open={open} onOpenChange={(e) => setOpen(e)}>
       <DialogTrigger asChild>
         <Button
           variant="outline"
@@ -64,9 +65,9 @@ export function SerialSettingsDialog() {
           defaultValues={serialSettings}
         />
         <DialogFooter>
-          <Button variant="outline" onClick={() => setOpen(false)}>
-            Cancel
-          </Button>
+          <DialogClose>
+            <Button variant="outline">Cancel</Button>
+          </DialogClose>
           <Button type="submit" form="form-serial-settings">
             Save
           </Button>

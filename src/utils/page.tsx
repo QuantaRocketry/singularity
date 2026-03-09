@@ -5,7 +5,7 @@ import {
   SidebarProvider,
   SidebarTrigger,
 } from "@/components/ui/sidebar";
-import { Serial } from "./serial";
+import { SerialControlWidget } from "../components/header-widgets/serial-control";
 import { Spinner } from "@/components/ui/spinner";
 import { cn } from "@/lib/utils";
 
@@ -24,7 +24,7 @@ export default function Page({
     <SidebarProvider>
       <AppSidebar />
       <SidebarInset className="h-screen flex flex-col overflow-hidden">
-        <header className="flex flex-row h-16 items-center gap-2 transition-[width,height] ease-linear group-has-data-[collapsible=icon]/sidebar-wrapper:h-12 p-2">
+        <header className="flex flex-row h-16 items-center gap-2 transition-[width,height] ease-linear group-has-data-[collapsible=icon]/sidebar-wrapper:h-12 p-4">
           <SidebarTrigger />
           <Separator
             orientation="vertical"
@@ -32,7 +32,7 @@ export default function Page({
           />
           <h1>{title}</h1>
           <div className="grow" />
-          {hasSerialSelector && <Serial />}
+          {hasSerialSelector && <SerialControlWidget />}
         </header>
         <main
           className={cn("grow overflow-y-auto p-4 pt-0 relative", className)}

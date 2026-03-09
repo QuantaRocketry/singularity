@@ -1,5 +1,5 @@
 import Page from "@/utils/page";
-import { Field, FieldGroup, FieldLabel, FieldSet } from "@/components/ui/field";
+import { Field, FieldGroup, FieldLabel } from "@/components/ui/field";
 import { Button } from "@/components/ui/button";
 import { invoke } from "@tauri-apps/api/core";
 import { showError } from "@/utils/error";
@@ -46,38 +46,36 @@ export default function Settings() {
 
   return (
     <Page title="Settings" loaded={pageLoaded}>
-      <form className="gap-4 max-w-2xl px-4 py-8" onSubmit={handleSumbit}>
+      <form className="gap-4 max-w-2xl" onSubmit={handleSumbit}>
         <FieldGroup>
           <ThemeSelector />
-          <FieldSet>
-            <FieldGroup>
-              <Field className="w-fit">
-                <FieldLabel htmlFor="input-cesium-api-key">
-                  Cesium API Key
-                </FieldLabel>
-                <InputGroup>
-                  <InputGroupInput
-                    id="input-cesium-api-key"
-                    type={showKey ? "text" : "password"}
-                    value={keyInput}
-                    onChange={(e) => setKeyInput(e.target.value)}
-                    placeholder="sk-..."
-                  />
-                  <InputGroupAddon align="inline-end">
-                    <Button
-                      type="button"
-                      variant="ghost"
-                      size="icon"
-                      className="hover:bg-transparent"
-                      onClick={() => setShowKey(!showKey)}
-                    >
-                      {showKey ? <EyeIcon /> : <EyeOffIcon />}
-                    </Button>
-                  </InputGroupAddon>
-                </InputGroup>
-              </Field>
-            </FieldGroup>
-          </FieldSet>
+          <FieldGroup>
+            <Field className="w-fit">
+              <FieldLabel htmlFor="input-cesium-api-key">
+                Cesium API Key
+              </FieldLabel>
+              <InputGroup>
+                <InputGroupInput
+                  id="input-cesium-api-key"
+                  type={showKey ? "text" : "password"}
+                  value={keyInput}
+                  onChange={(e) => setKeyInput(e.target.value)}
+                  placeholder="sk-..."
+                />
+                <InputGroupAddon align="inline-end">
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    size="icon"
+                    className="hover:bg-transparent"
+                    onClick={() => setShowKey(!showKey)}
+                  >
+                    {showKey ? <EyeIcon /> : <EyeOffIcon />}
+                  </Button>
+                </InputGroupAddon>
+              </InputGroup>
+            </Field>
+          </FieldGroup>
           <Field>
             <div>
               <Button type="submit">Submit</Button>

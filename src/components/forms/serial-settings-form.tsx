@@ -50,7 +50,7 @@ export function SerialSettingsForm({
                 onValueChange={field.onChange}
               >
                 <SelectTrigger>
-                  <SelectValue placeholder="Select a port" />
+                  <SelectValue placeholder="Select a baud rate" />
                 </SelectTrigger>
                 <SelectContent position={"popper"}>
                   <SelectGroup>
