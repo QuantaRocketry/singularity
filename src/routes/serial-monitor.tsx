@@ -1,11 +1,12 @@
-import { useState, useEffect, useRef } from "react";
-import { invoke } from "@tauri-apps/api/core";
-import { listen } from "@tauri-apps/api/event";
-import { showError } from "@/utils/error";
-import Page from "@/utils/page";
+import { SerialControlWidget } from "@/components/header-widgets/serial-control";
+import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
-import { Button } from "@/components/ui/button";
+import { showError } from "@/utils/error";
+import Page from "@/utils/page";
+import { invoke } from "@tauri-apps/api/core";
+import { listen } from "@tauri-apps/api/event";
+import { useEffect, useRef, useState } from "react";
 
 function SerialStream() {
   const [content, setContent] = useState([""]);
@@ -106,7 +107,7 @@ function SerialStream() {
 
 export default function SerialMonitor() {
   return (
-    <Page title="Serial Monitor" hasSerialSelector>
+    <Page title="Serial Monitor" widgets={[<SerialControlWidget />]}>
       <SerialStream />
     </Page>
   );

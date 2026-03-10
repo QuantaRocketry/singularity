@@ -5,20 +5,20 @@ import {
   SidebarProvider,
   SidebarTrigger,
 } from "@/components/ui/sidebar";
-import { SerialControlWidget } from "../components/header-widgets/serial-control";
 import { Spinner } from "@/components/ui/spinner";
 import { cn } from "@/lib/utils";
+import { ReactNode } from "react";
 
 export default function Page({
   title,
-  hasSerialSelector = false,
   loaded = true,
+  widgets = [],
   children,
   className,
 }: React.ComponentProps<"div"> & {
   title: string;
-  hasSerialSelector?: boolean;
   loaded?: boolean;
+  widgets?: ReactNode[];
 }) {
   return (
     <SidebarProvider>
@@ -32,7 +32,7 @@ export default function Page({
           />
           <h1>{title}</h1>
           <div className="grow" />
-          {hasSerialSelector && <SerialControlWidget />}
+          {widgets.map((w) => w)}
         </header>
         <main
           className={cn("grow overflow-y-auto p-4 pt-0 relative", className)}

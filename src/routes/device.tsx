@@ -1,13 +1,14 @@
-import { useContext } from "react";
-import { invoke } from "@tauri-apps/api/core";
-import { AiOutlineUpload, AiOutlineDownload } from "react-icons/ai";
-import { showError } from "../utils/error";
-import { DeviceSettings } from "../context/settings/Device";
-import { DeploymentOptions, LoraOptions } from "../utils/options";
-import { SettingsContext } from "../context/SettingsProvider";
-import Page from "@/utils/page";
+import { SerialControlWidget } from "@/components/header-widgets/serial-control";
 import { Button } from "@/components/ui/button";
 import { ButtonGroup } from "@/components/ui/button-group";
+import Page from "@/utils/page";
+import { invoke } from "@tauri-apps/api/core";
+import { useContext } from "react";
+import { AiOutlineDownload, AiOutlineUpload } from "react-icons/ai";
+import { DeviceSettings } from "../context/settings/Device";
+import { SettingsContext } from "../context/SettingsProvider";
+import { showError } from "../utils/error";
+import { DeploymentOptions, LoraOptions } from "../utils/options";
 
 // function DeviceSelector() {
 //   const { deviceSettings, setDeviceSettings } = useContext(SettingsContext);
@@ -119,7 +120,7 @@ export default function Device() {
   }
 
   return (
-    <Page title="Device" hasSerialSelector>
+    <Page title="Device" widgets={[<SerialControlWidget />]}>
       <Options />
       <ButtonGroup
         style={{ position: "absolute", right: "1.25rem", bottom: "1.25rem" }}

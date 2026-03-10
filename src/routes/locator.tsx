@@ -1,10 +1,11 @@
-import "cesium/Build/Cesium/Widgets/widgets.css";
-import OnlineMap from "./locator/online-map";
-import OfflineMap from "./locator/offline-map";
-import Page from "@/utils/page";
-import { useEffect, useState } from "react";
-import { invoke } from "@tauri-apps/api/core";
+import { SerialControlWidget } from "@/components/header-widgets/serial-control";
 import { showError } from "@/utils/error";
+import Page from "@/utils/page";
+import { invoke } from "@tauri-apps/api/core";
+import "cesium/Build/Cesium/Widgets/widgets.css";
+import { useEffect, useState } from "react";
+import OfflineMap from "./locator/offline-map";
+import OnlineMap from "./locator/online-map";
 
 export default function Locator() {
   const [pageLoaded, setPageLoaded] = useState<boolean>(false);
@@ -50,7 +51,7 @@ export default function Locator() {
   }, []);
 
   return (
-    <Page title="Map" hasSerialSelector loaded={pageLoaded}>
+    <Page title="Map" widgets={[<SerialControlWidget />]} loaded={pageLoaded}>
       <div className="h-full flex flex-row">
         {isOnline ? (
           <OnlineMap ionAccessToken={ionAccessToken} />
