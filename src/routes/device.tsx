@@ -78,7 +78,7 @@ function Options() {
 
   if (!deviceSettings) {
     return (
-      <div className="flex grow justify-center">
+      <div className="flex grow h-full justify-center">
         <div className="content-center">
           Please select a device or download device settings from a connected
           device.
