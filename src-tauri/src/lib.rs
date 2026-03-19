@@ -34,7 +34,13 @@ pub fn run() {
         .plugin(tauri_plugin_os::init())
         .setup(|app| {
             let handler_clone = app.handle().clone();
-            let path = app.path().app_data_dir().unwrap().join(settings::FILE_NAME);
+
+            let config_dir = app.path().app_config_dir().unwrap();
+            if let Err(e) = fs::create_dir_all(&config_dir) {
+                eprintln!("Failed to create config dir: {}", e);
+            };
+
+            let path = config_dir.join(settings::FILE_NAME);
             let app_settings = settings::AppSettings::load(path);
 
             let app_data = AppData::default();
@@ -60,6 +66,8 @@ pub fn run() {
             serial::set_baud_rate,
             settings::app::get_cesium_ion_token,
             settings::app::set_cesium_ion_token,
+            settings::app::get_app_settings,
+            settings::app::set_app_settings,
             settings::device::upload_device_settings,
             settings::device::download_device_settings,
             settings::device::get_device_settings,

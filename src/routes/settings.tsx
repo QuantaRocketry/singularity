@@ -11,6 +11,7 @@ import {
   InputGroupInput,
 } from "@/components/ui/input-group";
 import { EyeIcon, EyeOffIcon } from "lucide-react";
+import { AppSettings } from "@/context/settings/AppSettings";
 
 export default function Settings() {
   const [keyInput, setKeyInput] = useState<string | undefined>(undefined);
@@ -25,9 +26,13 @@ export default function Settings() {
   }
 
   async function getSettings() {
-    invoke("get_cesium_ion_token")
-      .then((token) => {
-        setKeyInput(token as string);
+    invoke("get_app_settings")
+      .then((response) => {
+        let settings = response as AppSettings;
+        if (settings.cesium_api_key) {
+          setKeyInput(settings.cesium_api_key);
+        }
+
         setPageLoaded(true);
       })
       .catch((e) => {

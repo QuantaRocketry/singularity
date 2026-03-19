@@ -8,7 +8,4 @@ pub use app::AppSettings;
 pub use device::DeviceSettings;
 pub use serial::SerialSettings;
 
-use crate::env;
-use crate::AppData;
-
-pub const FILE_NAME: &'static str = "settings.json";
+pub const FILE_NAME: &'static str = "settings.toml";
