@@ -13,6 +13,7 @@ import Locator from "./routes/locator";
 import ErrorProvider from "./utils/error";
 import Metrics from "./routes/metrics";
 import { TooltipProvider } from "@/components/ui/tooltip";
+import Home from "./routes/home";
 
 const router = createHashRouter([
   {
@@ -39,6 +40,10 @@ const router = createHashRouter([
       {
         path: "/settings",
         element: <Settings />,
+      },
+      {
+        path: "/home",
+        element: <Home />,
       },
     ],
   },

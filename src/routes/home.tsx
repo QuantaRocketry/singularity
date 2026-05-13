@@ -1,6 +1,8 @@
 import { useState } from "react";
 // import reactLogo from "../assets/react.svg";
 import { invoke } from "@tauri-apps/api/core";
+import Page from "@/utils/page";
+import PlotCard from "@/components/cards/plot";
 export default function Home() {
   const [greetMsg, setGreetMsg] = useState("");
   const [name, setName] = useState("");
@@ -11,7 +13,8 @@ export default function Home() {
   }
 
   return (
-    <div className="flex flex-row h-full w-full m-10">
+    <Page
+      title="Home">
       <div>
         <div className="flex flex-col">
           <h1>Welcome to Tauri!</h1>
@@ -23,12 +26,14 @@ export default function Home() {
               onChange={(e) => setName(e.currentTarget.value)}
               placeholder="Enter a name..."
             />
-            <button className="btn btn-primary join-item" onClick={()=>{greet()}}>Greet</button>
+            <button className="btn btn-primary join-item" onClick={() => { greet() }}>Greet</button>
           </div>
 
           <p>{greetMsg}</p>
+
+          <PlotCard />
         </div>
       </div>
-    </div>
+    </Page>
   );
 }

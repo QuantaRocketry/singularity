@@ -14,6 +14,7 @@ import {
   MapPinned,
   ChartSpline,
   TestTubeDiagonal,
+  Home,
 } from "lucide-react";
 import { AiOutlineUsb } from "react-icons/ai";
 import { Link } from "react-router-dom";
@@ -39,6 +40,11 @@ const items = [
     title: "Device",
     url: "/device",
     icon: TestTubeDiagonal,
+  },
+  {
+    title: "Home",
+    url: "/home",
+    icon: Home,
   },
 ];
 
