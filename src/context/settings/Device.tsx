@@ -1,3 +1,5 @@
+export const DEVICE_VARIANTS = ["Entangler", "Warp"] as const;
+
 export interface LoraSettings {
   frequency: number;
   bandwidth: number;

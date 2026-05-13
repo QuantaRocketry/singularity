@@ -4,74 +4,71 @@ import { ButtonGroup } from "@/components/ui/button-group";
 import Page from "@/utils/page";
 import { invoke } from "@tauri-apps/api/core";
 import { useContext } from "react";
+import { useEffect } from "react";
 import { AiOutlineDownload, AiOutlineUpload } from "react-icons/ai";
-import { DeviceSettings } from "../context/settings/Device";
+import { DEVICE_VARIANTS, DeviceSettings } from "../context/settings/Device";
 import { SettingsContext } from "../context/SettingsProvider";
 import { showError } from "../utils/error";
 import { DeploymentOptions, LoraOptions } from "../utils/options";
+import {
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
-// function DeviceSelector() {
-//   const { deviceSettings, setDeviceSettings } = useContext(SettingsContext);
-//   const [deviceVariants, setDeviceVariants] = useState([""]);
+export function DeviceSelectorWidget() {
+  const { deviceSettings, setDeviceSettings } = useContext(SettingsContext);
 
-//   async function setDevice(device: string) {
-//     await invoke("set_device_variant", { device });
-//     invoke("get_device_settings")
-//       .then((s) => {
-//         Button;
-//         setDeviceSettings(s as DeviceSettings);
-//       })
-//       .catch((e) => showError(e));
-//   }
+  async function setDeviceVariant(p: DeviceSettings["type"]) {
+    await invoke("set_device_variant", { device: p as string });
+    getDeviceSettings();
+  }
 
-//   async function getDeviceVariants() {
-//     let board_options = await invoke("get_device_variants");
-//     board_options = (board_options as DeviceSettings[]).map(
-//       (b) => b.type as string,
-//     );
-//     setDeviceVariants(board_options as string[]);
-//   }
+  async function getDeviceSettings() {
+    invoke("get_device_settings")
+      .then((p) => {
+        if (p) {
+          setDeviceSettings(p as DeviceSettings);
+        }
+      })
+      .catch((e) => {
+        console.error(e);
+        // setDeviceSelect();
+      });
+  }
 
-//   useEffect(() => {
-//     getDeviceVariants();
-//   }, []);
+  useEffect(() => {
+    if (!deviceSettings) {
+      getDeviceSettings();
+    }
+  }, []);
 
-//   return (
-//     <div className="join">
-//       <input
-//         className={"input input-bordered join-item w-40"}
-//         id="boardInput"
-//         value={deviceSettings ? deviceSettings.type : undefined}
-//         onChange={(e) => setDevice(e.currentTarget.value)}
-//         placeholder="Select a device..."
-//       />
-//       <div className="dropdown dropdown-end">
-//         <a
-//           tabIndex={0}
-//           role="button"
-//           className="btn btn-neutral join-item"
-//           onClick={() => {
-//             getDeviceVariants();
-//           }}
-//         >
-//           Device
-//         </a>
-//         <ul
-//           tabIndex={0}
-//           className="dropdown-content menu bg-base-100 rounded-box z-[1] w-52 p-2 shadow"
-//         >
-//           {deviceVariants.map((p) => {
-//             return (
-//               <li>
-//                 <a onClick={() => setDevice(p)}>{p}</a>
-//               </li>
-//             );
-//           })}
-//         </ul>
-//       </div>
-//     </div>
-//   );
-// }
+
+  return (
+    <Select
+      onValueChange={(value) => {
+        setDeviceVariant(value as DeviceSettings["type"]);
+      }}
+      value={deviceSettings?.type}
+    >
+      <SelectTrigger>
+        <SelectValue placeholder="Select a device" />
+      </SelectTrigger>
+      <SelectContent position={"popper"}>
+        <SelectGroup>
+          {DEVICE_VARIANTS.map((value, index) => (
+            <SelectItem key={index} value={value}>
+              {value}
+            </SelectItem>
+          ))}
+        </SelectGroup>
+      </SelectContent>
+    </Select>
+  );
+}
 
 function Options() {
   const { deviceSettings } = useContext(SettingsContext);
@@ -88,9 +85,9 @@ function Options() {
   }
 
   return (
-    <div>
-      {deviceSettings && "lora" in deviceSettings.data && <LoraOptions />}
-      {deviceSettings && "deployment" in deviceSettings.data && (
+    <div className="space-y-4">
+      {deviceSettings && deviceSettings.data && "lora" in deviceSettings.data && <LoraOptions />}
+      {deviceSettings && deviceSettings.data && "deployment" in deviceSettings.data && (
         <DeploymentOptions />
       )}
     </div>
@@ -120,7 +117,7 @@ export default function Device() {
   }
 
   return (
-    <Page title="Device" widgets={[<SerialControlWidget />]}>
+    <Page title="Device" widgets={[<DeviceSelectorWidget />, <SerialControlWidget />]}>
       <Options />
       <ButtonGroup
         style={{ position: "absolute", right: "1.25rem", bottom: "1.25rem" }}
