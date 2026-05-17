@@ -1,0 +1,3 @@
+[submodule "src-tauri/protocols/uts-odin-protocol"]
+	path = src-tauri/protocols/uts-odin-protocol
+	url = git@github.com:Gibson431/uts-odin-protocol.git

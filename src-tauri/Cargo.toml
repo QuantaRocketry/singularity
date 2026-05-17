@@ -28,3 +28,6 @@ tauri-plugin-os = "2.3.1"
 tauri-plugin-fs = "2.3"
 tauri-plugin-opener = "2.4"
 toml = "1.0.7"
+
+[dependencies.odin]
+path = "./protocols/uts-odin-protocol"
