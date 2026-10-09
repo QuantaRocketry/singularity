@@ -1,4 +1,4 @@
-# Singularity 
+# Singularity
 
 [![My Skills](https://skillicons.dev/icons?i=tauri,rust,ts,tailwind)](https://skillicons.dev)
 
@@ -6,10 +6,10 @@ A device manager designed for interacting with Quanta Rocketry's systems (and an
 
 ## Usage
 
-This project uses a mix of nix-shell and justfile.
+This project uses a mix of a Nix flake and justfile.
 
 ```sh
-nix-shell 
+nix develop
 ```
 
 ```sh
@@ -34,6 +34,24 @@ sudo apt install \
   libayatana-appindicator3-dev \
   libwebkit2gtk-4.1-dev \
   libjavascriptcoregtk-4.1-dev
+```
+
+### Fedora
+
+```sh
+sudo dnf group install c-development
+sudo dnf install \
+  curl \
+  wget \
+  file \
+  libxdo-devel \
+  openssl-devel \
+  librsvg2-devel \
+  libsoup3-devel \
+  libappindicator-gtk3-devel \
+  webkit2gtk4.1-devel \
+  javascriptcoregtk4.1-devel \
+  systemd-devel
 ```
 
 ## Screenshots
