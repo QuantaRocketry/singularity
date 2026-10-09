@@ -24,7 +24,11 @@ export function SerialSettingsDialog() {
     console.log(data);
     setSerialSettings(data);
     invoke("set_serial_settings", {
-      settings: { baud_rate: Number(data.baudRate) },
+      settings: {
+        connection_type: data.connectionType,
+        protocol: data.protocol,
+        baud_rate: Number(data.baudRate),
+      },
     })
       .then(() => {
         setOpen(false);
@@ -35,8 +39,16 @@ export function SerialSettingsDialog() {
   useEffect(() => {
     invoke("get_serial_settings")
       .then((s) => {
-        let settings = s as { baud_rate: number };
-        setSerialSettings({ baudRate: settings.baud_rate.toString() });
+        let settings = s as {
+          connection_type: SerialSettingsValues["connectionType"];
+          protocol: SerialSettingsValues["protocol"];
+          baud_rate: number;
+        };
+        setSerialSettings({
+          connectionType: settings.connection_type,
+          protocol: settings.protocol,
+          baudRate: settings.baud_rate.toString(),
+        });
       })
       .catch((e) => console.error(e));
   }, []);
@@ -57,7 +69,7 @@ export function SerialSettingsDialog() {
       </DialogTrigger>
       <DialogContent className="sm:max-w-sm">
         <DialogHeader>
-          <DialogTitle>Serial Settings</DialogTitle>
+          <DialogTitle>Connection Settings</DialogTitle>
         </DialogHeader>
         <SerialSettingsForm
           id="form-serial-settings"

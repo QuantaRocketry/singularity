@@ -7,11 +7,11 @@ import Settings from "./routes/settings";
 import { TauriProvider } from "./context/TauriProvider";
 import "./styles.css";
 import { SettingsProvider } from "./context/SettingsProvider";
-import Device from "./routes/device";
-import SerialMonitor from "./routes/serial-monitor";
+import Configuration from "./routes/configuration";
+import Terminal from "./routes/terminal";
 import Locator from "./routes/locator";
 import ErrorProvider from "./utils/error";
-import Metrics from "./routes/metrics";
+import DeviceMonitor from "./routes/device-monitor";
 import { TooltipProvider } from "@/components/ui/tooltip";
 
 const router = createHashRouter([
@@ -22,15 +22,15 @@ const router = createHashRouter([
     children: [
       {
         index: true,
-        element: <SerialMonitor />,
+        element: <DeviceMonitor />,
       },
       {
-        path: "/device",
-        element: <Device />,
+        path: "/device-monitor",
+        element: <DeviceMonitor />,
       },
       {
-        path: "/metrics",
-        element: <Metrics />,
+        path: "/configuration",
+        element: <Configuration />,
       },
       {
         path: "/locator",
@@ -39,6 +39,10 @@ const router = createHashRouter([
       {
         path: "/settings",
         element: <Settings />,
+      },
+      {
+        path: "/terminal",
+        element: <Terminal />,
       },
     ],
   },

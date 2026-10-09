@@ -2,6 +2,7 @@
 #![cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
 
 mod odometry;
+mod protocols;
 mod serial;
 mod settings;
 
@@ -46,8 +47,8 @@ pub fn run() {
 
             app.manage(app_data);
             tauri::async_runtime::spawn(async move {
-                if let Err(e) = serial::serial_monitor(&handler_clone).await {
-                    eprintln!("Error in serial monitor: {}", e);
+                if let Err(e) = serial::terminal(&handler_clone).await {
+                    eprintln!("Error in terminal: {}", e);
                 }
             });
             Ok(())

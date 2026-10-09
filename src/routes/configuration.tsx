@@ -46,7 +46,6 @@ export function DeviceSelectorWidget() {
     }
   }, []);
 
-
   return (
     <Select
       onValueChange={(value) => {
@@ -86,15 +85,17 @@ function Options() {
 
   return (
     <div className="space-y-4">
-      {deviceSettings && deviceSettings.data && "lora" in deviceSettings.data && <LoraOptions />}
-      {deviceSettings && deviceSettings.data && "deployment" in deviceSettings.data && (
-        <DeploymentOptions />
-      )}
+      {deviceSettings &&
+        deviceSettings.data &&
+        "lora" in deviceSettings.data && <LoraOptions />}
+      {deviceSettings &&
+        deviceSettings.data &&
+        "deployment" in deviceSettings.data && <DeploymentOptions />}
     </div>
   );
 }
 
-export default function Device() {
+export default function Configuration() {
   const { deviceSettings, setDeviceSettings } = useContext(SettingsContext);
 
   async function upload() {
@@ -117,7 +118,10 @@ export default function Device() {
   }
 
   return (
-    <Page title="Device" widgets={[<DeviceSelectorWidget />, <SerialControlWidget />]}>
+    <Page
+      title="Configuration"
+      widgets={[<DeviceSelectorWidget />, <SerialControlWidget />]}
+    >
       <Options />
       <ButtonGroup
         style={{ position: "absolute", right: "1.25rem", bottom: "1.25rem" }}

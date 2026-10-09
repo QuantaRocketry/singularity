@@ -83,7 +83,7 @@ export default function Settings() {
           </FieldGroup>
           <Field>
             <div>
-              <Button type="submit">Submit</Button>
+              <Button type="submit">Save</Button>
             </div>
           </Field>
         </FieldGroup>

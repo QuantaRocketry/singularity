@@ -7,6 +7,8 @@ use std::sync::Mutex;
 pub enum DeviceSettings {
     Entangler(EntanglerSettings),
     Warp(WarpSettings),
+    #[serde(rename = "Wio-L1")]
+    WioL1(WioL1Settings),
 }
 
 #[derive(Default, Serialize, Deserialize, Debug, PartialEq, Clone, Copy)]
@@ -17,6 +19,11 @@ pub struct EntanglerSettings {
 #[derive(Default, Serialize, Deserialize, Debug, PartialEq, Clone, Copy)]
 pub struct WarpSettings {
     deployment: DeploymentSettings,
+}
+
+#[derive(Default, Serialize, Deserialize, Debug, PartialEq, Clone, Copy)]
+pub struct WioL1Settings {
+    lora: LoRaSettings,
 }
 
 #[derive(Default, Serialize, Deserialize, Debug, PartialEq, Clone, Copy)]
@@ -86,6 +93,7 @@ pub fn get_device_variants() -> Vec<DeviceSettings> {
     vec![
         DeviceSettings::Entangler(EntanglerSettings::default()),
         DeviceSettings::Warp(WarpSettings::default()),
+        DeviceSettings::WioL1(WioL1Settings::default()),
     ]
 }
 
@@ -97,6 +105,7 @@ pub async fn set_device_variant(
     let settings = match device.as_str() {
         "Entangler" => DeviceSettings::Entangler(EntanglerSettings::default()),
         "Warp" => DeviceSettings::Warp(WarpSettings::default()),
+        "Wio-L1" => DeviceSettings::WioL1(WioL1Settings::default()),
         _ => return Err(format!("No matching device in backend: {}", device)),
     };
 

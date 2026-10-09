@@ -2,6 +2,7 @@ use std::io::{self, Write};
 use std::thread;
 use std::time::Duration;
 
+use crate::protocols::{self, Context, ProtocolHandler};
 use crate::{settings, AppData};
 
 use serialport::{self, SerialPort};
@@ -34,7 +35,7 @@ fn open_port(
     port: &str,
     settings: &settings::SerialSettings,
 ) -> serialport::Result<Box<dyn SerialPort>> {
-    serialport::new(port, settings.baud_rate)
+    serialport::new(port, settings.effective_baud_rate())
         .timeout(Duration::from_millis(10))
         .open()
 }
@@ -132,41 +133,56 @@ pub async fn clear_serial_content(state: tauri::State<'_, AppData>) -> Result<()
     return Ok(());
 }
 
-pub async fn serial_monitor(handle: &tauri::AppHandle) -> Result<(), String> {
-    let mut serial_buf: Vec<u8> = vec![0; 1000];
+/// The handler for the currently selected protocol, tagged so we can tell
+/// when the selection changes.
+type ActiveHandler = (settings::Protocol, Box<dyn ProtocolHandler>);
+
+pub async fn terminal(handle: &tauri::AppHandle) -> Result<(), String> {
+    let mut read_buf = [0u8; 1000];
+    let mut active: Option<ActiveHandler> = None;
     loop {
         thread::sleep(Duration::from_millis(100));
-        let state_handle = handle.clone();
-        let state = state_handle.state::<AppData>();
+        let state = handle.state::<AppData>();
         let mut serial = state.serial.lock().unwrap();
 
-        if let Some(p) = &serial.connected_port {
-            let mut port = p.try_clone().expect("Failed to obtain clone");
-            match port.read(serial_buf.as_mut_slice()) {
-                Ok(t) => {
-                    let message = &serial_buf[..t];
-                    let lines = message.split(|&b| b == b'\n');
-                    lines.for_each(|line| {
-                        let _result = state_handle.emit(
-                            "serial_message_received",
-                            String::from_utf8_lossy(line).to_string(),
-                        );
-                        serial
-                            .content
-                            .push(String::from_utf8_lossy(line).to_string());
-                    });
-                }
-                Err(ref e) => match e.kind() {
-                    io::ErrorKind::BrokenPipe => {
-                        serial.connected_port = None;
-                        let _ = state_handle.emit("serial_disconnected", ());
-                        eprintln!("Port disconnected")
-                    }
-                    io::ErrorKind::TimedOut => {} // expected timeout
-                    _ => eprintln!("{:?}", e),
-                },
-            }
-            let _ = port.flush();
+        let Some(mut port) = serial
+            .connected_port
+            .as_ref()
+            .map(|p| p.try_clone().expect("Failed to obtain clone"))
+        else {
+            active = None; // drop decoder state while disconnected
+            continue;
+        };
+
+        // (Re)build the handler when the protocol setting changes.
+        let wanted = serial.settings.protocol;
+        let (_, protocol) = match &mut active {
+            Some(current) if current.0 == wanted => current,
+            slot => slot.insert((wanted, protocols::handler_for(wanted))),
+        };
+
+        if let Err(e) = protocol.poll(port.as_mut()) {
+            eprintln!("Protocol poll failed: {}", e);
         }
+
+        match port.read(&mut read_buf) {
+            Ok(n) => {
+                let mut ctx = Context {
+                    app: handle,
+                    serial: &mut serial,
+                };
+                protocol.on_data(&read_buf[..n], &mut ctx);
+            }
+            Err(e) => match e.kind() {
+                io::ErrorKind::TimedOut => {} // expected
+                io::ErrorKind::BrokenPipe => {
+                    serial.connected_port = None;
+                    let _ = handle.emit("serial_disconnected", ());
+                    eprintln!("Port disconnected");
+                }
+                _ => eprintln!("{:?}", e),
+            },
+        }
+        let _ = port.flush();
     }
 }

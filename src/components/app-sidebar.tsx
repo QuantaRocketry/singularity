@@ -21,9 +21,9 @@ import { useLocation } from "react-router-dom";
 
 const items = [
   {
-    title: "Serial Monitor",
-    url: "/",
-    icon: AiOutlineUsb,
+    title: "Device Monitor",
+    url: "/device-monitor",
+    icon: ChartSpline,
   },
   {
     title: "Map",
@@ -31,14 +31,14 @@ const items = [
     icon: MapPinned,
   },
   {
-    title: "Metrics",
-    url: "/metrics",
-    icon: ChartSpline,
+    title: "Configuration",
+    url: "/configuration",
+    icon: TestTubeDiagonal,
   },
   {
-    title: "Device",
-    url: "/device",
-    icon: TestTubeDiagonal,
+    title: "Terminal",
+    url: "/terminal",
+    icon: AiOutlineUsb,
   },
 ];
 

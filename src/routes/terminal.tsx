@@ -105,9 +105,9 @@ function SerialStream() {
   );
 }
 
-export default function SerialMonitor() {
+export default function Terminal() {
   return (
-    <Page title="Serial Monitor" widgets={[<SerialControlWidget />]}>
+    <Page title="Terminal" widgets={[<SerialControlWidget />]}>
       <SerialStream />
     </Page>
   );

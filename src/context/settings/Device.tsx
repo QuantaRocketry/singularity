@@ -1,4 +1,4 @@
-export const DEVICE_VARIANTS = ["Entangler", "Warp"] as const;
+export const DEVICE_VARIANTS = ["Entangler", "Warp", "Wio-L1"] as const;
 
 export interface LoraSettings {
   frequency: number;
@@ -23,6 +23,11 @@ export interface WarpSettings {
   deployment: DeploymentSettings;
 }
 
+export interface WioL1Settings {
+  lora: LoraSettings;
+}
+
 export type DeviceSettings =
   | { type: "Entangler"; data: EntanglerSettings }
-  | { type: "Warp"; data: WarpSettings };
+  | { type: "Warp"; data: WarpSettings }
+  | { type: "Wio-L1"; data: WioL1Settings };
