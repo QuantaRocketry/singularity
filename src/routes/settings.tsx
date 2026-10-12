@@ -4,7 +4,6 @@ import { Button } from "@/components/ui/button";
 import { invoke } from "@tauri-apps/api/core";
 import { showError } from "@/utils/error";
 import { useEffect, useState } from "react";
-import { ThemeSelector } from "./settings/theme-selector";
 import {
   InputGroup,
   InputGroupAddon,
@@ -53,7 +52,6 @@ export default function Settings() {
     <Page title="Settings" loaded={pageLoaded}>
       <form className="gap-4 max-w-2xl" onSubmit={handleSumbit}>
         <FieldGroup>
-          <ThemeSelector />
           <FieldGroup>
             <Field className="w-fit">
               <FieldLabel htmlFor="input-cesium-api-key">

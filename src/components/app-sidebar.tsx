@@ -15,6 +15,7 @@ import {
   ChartSpline,
   TestTubeDiagonal,
 } from "lucide-react";
+import { ThemeToggle } from "@/components/theme-toggle";
 import { AiOutlineUsb } from "react-icons/ai";
 import { Link } from "react-router-dom";
 import { useLocation } from "react-router-dom";
@@ -70,16 +71,19 @@ export function AppSidebar() {
         </SidebarGroup>
       </SidebarContent>
       <SidebarFooter>
-        <SidebarMenu>
-          <SidebarMenuItem>
-            <SidebarMenuButton asChild>
-              <Link to="/settings">
-                <Settings />
-                <span>Settings</span>
-              </Link>
-            </SidebarMenuButton>
-          </SidebarMenuItem>
-        </SidebarMenu>
+        <div className="flex items-center gap-1">
+          <SidebarMenu className="flex-1">
+            <SidebarMenuItem>
+              <SidebarMenuButton asChild>
+                <Link to="/settings">
+                  <Settings />
+                  <span>Settings</span>
+                </Link>
+              </SidebarMenuButton>
+            </SidebarMenuItem>
+          </SidebarMenu>
+          <ThemeToggle />
+        </div>
       </SidebarFooter>
     </Sidebar>
   );
