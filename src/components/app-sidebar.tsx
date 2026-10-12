@@ -21,8 +21,8 @@ import { useLocation } from "react-router-dom";
 
 const items = [
   {
-    title: "Device Monitor",
-    url: "/device-monitor",
+    title: "Monitor",
+    url: "/monitor",
     icon: ChartSpline,
   },
   {

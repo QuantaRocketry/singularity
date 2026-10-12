@@ -11,7 +11,7 @@ import Configuration from "./routes/configuration";
 import Terminal from "./routes/terminal";
 import Locator from "./routes/locator";
 import ErrorProvider from "./utils/error";
-import DeviceMonitor from "./routes/device-monitor";
+import Monitor from "./routes/monitor";
 import { TooltipProvider } from "@/components/ui/tooltip";
 
 const router = createHashRouter([
@@ -22,11 +22,11 @@ const router = createHashRouter([
     children: [
       {
         index: true,
-        element: <DeviceMonitor />,
+        element: <Monitor />,
       },
       {
-        path: "/device-monitor",
-        element: <DeviceMonitor />,
+        path: "/monitor",
+        element: <Monitor />,
       },
       {
         path: "/configuration",
